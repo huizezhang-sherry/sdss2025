@@ -1,0 +1,55 @@
+---
+title: "Inside Out: Externalizing Assumptions in Data Analysis as Validation Checks"
+author: "H. Sherry Zhang " 
+institute: "University of Texas at Austin" 
+date: "2025 Aug 05"
+format: 
+  revealjs:
+    scrollable: true
+    slide-number: true
+    show-slide-number: all
+    aspectratio: 169
+    theme: serif
+    preview-links: auto
+    multiplex: true
+    pdf-separate-fragments: true
+    css: style.css
+    footer: "https://sherryzhang-sdss2025.netlify.app"
+title-slide-attributes: 
+  data-background-image: figures/logo.png
+  data-background-size: 7%
+  data-background-position: 98% 98%
+editor_options: 
+  chunk_output_type: console
+editor: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup}
+#| include: false  
+library(knitr)
+options(htmltools.dir.version = FALSE)
+opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, 
+               error = FALSE, fig.align = "center")
+```
+
+
+
+## `r emo::ji("link")` {background-image="figures/qrcode.svg" background-size="15%" background-position="top right"}
+
+```{r echo = FALSE, eval = FALSE}
+library(qrcode)
+a <- qr_code("https://sherryzhang-sdss2025.netlify.app/")
+generate_svg(a, filename = "figures/qrcode.svg")
+```
+
+-   this slide:
+    -   {{< fa link >}}: <https://sherryzhang-sdss2025.netlify.app>
+    -   {{< fa brands github >}}:
+        <https://github.com/huizezhang-sherry/sdss2025>
+-   paper:
+    -   Zhang, H. S., Peng, D. R. (2024). Inside Out: Externalizing 
+        Assumptions in Data Analysis as Validation Checks. Submitted 
+        to the Journal of Data Science: <https://arxiv.org/abs/2501.04296>
+

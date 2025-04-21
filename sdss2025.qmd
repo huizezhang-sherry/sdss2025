@@ -15,6 +15,8 @@ format:
     pdf-separate-fragments: true
     css: style.css
     footer: "https://sherryzhang-sdss2025.netlify.app"
+preamble: >
+  \usepackage{amsfonts,amsmath,amssymb,amsthm}
 title-slide-attributes: 
   data-background-image: figures/logo.png
   data-background-size: 7%
@@ -34,7 +36,117 @@ opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE,
                error = FALSE, fig.align = "center")
 ```
 
+# Background
 
+## A toy example: step count data
+
+Consider a 30-day step count experiment in a public health setting. Subjects are in- structed to walk at least 8,000 steps each day, with an expected average of 9,000 steps, tracked by a step counter app.
+
+  * low days: subjects forgot to wear the device
+  * high days: after intense outdoor workout
+
+Expectation: The average step count of a given subject is between [8, 500, 9, 500]
+
+## Checks to validate the data
+
+Many checks are possible to ensure the average fall into the expected range: 
+
+
+Here we formulate three checks to validate the data:
+
+* Check 1: the 60% quantile of the observed step counts is greater than 10,000  
+* Check 2: the 40% quantile of the observed step counts is less than 8,000, and 
+* Check 3: the standard deviation of the observed step counts exceeds 2,500.
+
+## Procedure oberview
+
+<center>![](figures/metric-calc.png)</center>
+
+## Accuracy
+
+**A quick summary on logic regression (not logistic!)**
+
+Ruczinski et al., 2003 for SNP microarray data
+
+construct Boolean expressions $\mathcal{L}(X_1, X_2, \cdots, X_n)$ from logical operations: $\mathcal{L(\cdot)}$ includes AND ($\land$), OR ($\lor$) and NOT ($\neg$), e.g. $X_1 \text{ AND } (X_2 \text{ OR } X_3)$
+
+The logic regression model:
+
+$$E(Y) = \mathcal{L}(X_1, X_2, \cdots, X_n)$$
+
+## Cont'd.
+
+Optimize the objective function using simulated annealing algorithm to minimize the misclassification error. 
+
+The following 6 moves are permitted during the optimization to grow or prune the tree 
+
+<center>![](figures/tree-growth.png)</center>
+
+## Accuracy 
+
+Illustration
+
+Data structure  --> logic regression: $E(\text{unexpected}) \sim L(\text{check1}, \text{check2}, \cdots )$  --> predicted/unexpected table --> precision and recall
+
+
+## Redundancy
+
+Total correlation - a generalization of mutual information
+
+$$\sum_{x_1} \sum_{x_2} \cdots \sum_{x_n} p(x_1, x_2, \cdots, x_n) \log \frac{p(x_1, x_2, \cdots, x_n)}{p(x_1)p(x_2) \cdots p(x_n)}$$
+
+
+* high total correlation --> overlapping information among validation checks (bad)
+* low total correlation --> independent information among validation checks (good)
+
+Use total correlation per observation 
+
+## Combine them together
+
+<center>![](figures/metric-calc.png)</center>
+
+zoom to the right
+
+## Revisit the step count data
+
+![](figures/step-count-summary.png)
+
+## Revisit the step count data
+
+![](figures/step-count-plot.png)
+
+# Application: Association of PM10 on daily mortality 
+
+## PM10 concentration on daily mortality
+
+some contexts
+
+possible checks
+
+## Results
+
+![](figures/mortality-plot.png)
+
+checks with cutoff values picked: 
+
+* mortality-PM10 correlation less than −0.03
+* mortality-temperature correlation greater than −0.3
+* PM10 data contains outliers detected by the univariate outlier detection
+* mortality data contains outliers detected by the univariate outlier detection
+
+The fitted logic regression model is
+
+> (cor(mortality, PM10) < -0.03) AND (cor(mortality, tmp) > -0.3 OR (mortality outlier AND PM10 outlier))
+
+## Results
+
+![](figures/mortality-summary.png)
+
+## Additional cities
+
+![](figures/additional-cities-summary.png)
+
+## Discussion
 
 ## `r emo::ji("link")` {background-image="figures/qrcode.svg" background-size="15%" background-position="top right"}
 

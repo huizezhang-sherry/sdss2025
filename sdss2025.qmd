@@ -11,7 +11,6 @@ format:
     aspectratio: 169
     theme: serif
     preview-links: auto
-    multiplex: true
     pdf-separate-fragments: true
     css: style.css
     footer: "https://sherryzhang-sdss2025.netlify.app"
@@ -31,38 +30,174 @@ editor:
 ```{r setup}
 #| include: false  
 library(knitr)
+library(tidyverse)
 options(htmltools.dir.version = FALSE)
 opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, 
                error = FALSE, fig.align = "center")
 ```
 
-# Background
+## [Unexpected results are everywhere in data analysis]{.r-fit-text}{.smaller}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+Example 1: 
+
+Calculate the mean of penguins bill length
+
+```{r echo = TRUE}
+library(palmerpenguins)
+penguins$bill_length_mm |> 
+  mean()
+```
+
+<br>
+
+Why are we getting `NA`???
+
+:::
+
+::: {.column width="50%" .fragment}
+
+
+```{r}
+df <- data.frame(
+    date = as.Date("2020-01-01") + 0:4,
+    value = c(1, 2, NA, 4, 5)
+)
+```
+
+Example 2: 
+
+Plot the Ozone level in May across time
+
+
+```{r echo = TRUE}
+airquality |> 
+  filter(Month == 5) |> 
+  ggplot(aes(x = Day, y = Ozone)) + 
+  geom_line()
+```
+
+What are these gaps???
+
+:::
+
+::::
+
+## [Unexpected results are everywhere in data analysis]{.r-fit-text}{.smaller}
+
+
+```{r}
+pm10 <- read_csv(here::here("data/pm10.csv")) |>    
+  filter(!is.na(pm10)) |>    
+  mutate(season = as.factor(season))  
+```
+
+
+Example 3: 
+
+A basic linear regression of mortality on PM10 
+
+```{r echo = TRUE}
+lm(mortality ~ pm10, data = pm10) |> 
+  broom::tidy()
+```
+
+<br>
+
+Why is the `pm10` coefficient negative???
+
+--- 
+
+### When presenting an analysis, everything looks perfect and straightforward, but ... {.smaller}
+
+
+:::: {.columns}
+
+::: {.column width="50%" .fragment}
+
+In every step, analysts need to compare the **expectation and reality**
+
+  - Do they match?
+  - Why they are not?
+  - Problems with the code? 
+  - Problems with the data?
+  - ...
+
+:::
+
+::: {.column width="50%"}
+
+![](figures/path-to-sucess.png){height="300," width="500"}
+
+:::
+
+::::
+
+. . .
+
+
+## [Setup checks to diagnose unexpected results]{.r-fit-text}
+
+- Some unexpected results are easy to diagnose
+  
+  - Example 1 & 2: whether there are any missing values?
+  
+. . . 
+
+- Some require more domain knowledge: 
+  
+  - Example 3: whether temperature confounding has been added into the model?
+
+. . . 
+
+Sometimes, you need multiple checks to safeguard a result -> see the next step count example
+
 
 ## A toy example: step count data
 
-Consider a 30-day step count experiment in a public health setting. Subjects are in- structed to walk at least 8,000 steps each day, with an expected average of 9,000 steps, tracked by a step counter app.
+Consider a 30-day step count experiment in a public health setting. Subjects are instructed to walk at least 8,000 steps each day, with an expected average of 9,000 steps, tracked by a step counter app. Given the requirements of the study, we form our expectation as follows: 
 
-  * low days: subjects forgot to wear the device
-  * high days: after intense outdoor workout
+. . . 
 
-Expectation: The average step count of a given subject is between [8, 500, 9, 500]
+<br>
 
-## Checks to validate the data
+<center> **The average step count of a given subject is between [8500, 9500] **</center>
+
+## [Analysis validation checks to validate the data]{.r-fit-text}
 
 Many checks are possible to ensure the average fall into the expected range: 
 
 
-Here we formulate three checks to validate the data:
+:::{.incremental}
 
-* Check 1: the 60% quantile of the observed step counts is greater than 10,000  
-* Check 2: the 40% quantile of the observed step counts is less than 8,000, and 
-* Check 3: the standard deviation of the observed step counts exceeds 2,500.
+* Check 1: The 60% quantile of the observed step counts is greater than 10,000  
+* Check 2: The 40% quantile of the observed step counts is less than 8,000, and 
+* Check 3: The standard deviation of the observed step counts exceeds 2,500.
+* ...
 
-## Procedure oberview
+:::
 
-<center>![](figures/metric-calc.png)</center>
+## [Analysis validation checks]{.r-fit-text}
 
-## Accuracy
+
+:::{.incremental}
+
+* These checks are similar to unit tests in software development, but they are not deterministic -- meaning a check might pass (or fail) even when the result is unexpected (or expected).
+
+* Still, they can be helpful for diagnosing what might be going wrong in the analysis.
+
+* **Can we strike a balance between effectively detecting unexpected outcomes and maintaining a reasonable false positive rate?**
+
+:::
+
+## [A procedure to select the best subset of checks]{.r-fit-text}
+
+<center>![](figures/metric-calc.png){height="400," width="800"}</center>
+
+## The accuracy branch
 
 **A quick summary on logic regression (not logistic!)**
 
@@ -82,14 +217,14 @@ The following 6 moves are permitted during the optimization to grow or prune the
 
 <center>![](figures/tree-growth.png)</center>
 
-## Accuracy 
+## Cont'd. 
 
 Illustration
 
 Data structure  --> logic regression: $E(\text{unexpected}) \sim L(\text{check1}, \text{check2}, \cdots )$  --> predicted/unexpected table --> precision and recall
 
 
-## Redundancy
+## The redundancy branch
 
 Total correlation - a generalization of mutual information
 
@@ -103,9 +238,8 @@ Use total correlation per observation
 
 ## Combine them together
 
-<center>![](figures/metric-calc.png)</center>
+<center>![](figures/metric-calc.png){height="400," width="800"}</center>
 
-zoom to the right
 
 ## Revisit the step count data
 

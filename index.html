@@ -12,7 +12,7 @@
   <meta name="generator" content="quarto-1.6.39">
 
   <meta name="author" content="H. Sherry Zhang">
-  <meta name="dcterms.date" content="2025-08-05">
+  <meta name="dcterms.date" content="2025-05-01">
   <title>Inside Out: Externalizing Assumptions in Data Analysis as Validation Checks</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -210,7 +210,7 @@ H. Sherry Zhang
     </div>
 </div>
 
-  <p class="date">2025-08-05</p>
+  <p class="date">2025-05-01</p>
 </section>
 <section id="unexpected-results-are-everywhere-in-data-analysis" class="slide level2 smaller">
 <h2><span class="r-fit-text">Unexpected results are everywhere in data analysis</span></h2>
@@ -288,14 +288,14 @@ H. Sherry Zhang
 <ul>
 <li><p>Some unexpected results are easy to diagnose</p>
 <ul>
-<li>Example 1 &amp; 2: whether there are any missing values?</li>
+<li>Example 1 &amp; 2: Whether there are any missing values?</li>
 </ul></li>
 </ul>
 <div class="fragment">
 <ul>
 <li><p>Some require more domain knowledge:</p>
 <ul>
-<li>Example 3: whether temperature confounding has been added into the model?</li>
+<li>Example 3: Whether temperature confounding has been added into the model?</li>
 </ul></li>
 </ul>
 </div>
@@ -342,36 +342,50 @@ H. Sherry Zhang
 <img data-src="figures/metric-calc.png" width="800">
 </center>
 </section>
-<section id="the-accuracy-branch" class="slide level2">
-<h2>The accuracy branch</h2>
-<p><strong>A quick summary on logic regression (not logistic!)</strong></p>
-<p>Ruczinski et al., 2003 for SNP microarray data</p>
-<p>construct Boolean expressions <span class="math inline">\(\mathcal{L}(X_1, X_2, \cdots, X_n)\)</span> from logical operations: <span class="math inline">\(\mathcal{L(\cdot)}\)</span> includes AND (<span class="math inline">\(\land\)</span>), OR (<span class="math inline">\(\lor\)</span>) and NOT (<span class="math inline">\(\neg\)</span>), e.g.&nbsp;<span class="math inline">\(X_1 \text{ AND } (X_2 \text{ OR } X_3)\)</span></p>
-<p>The logic regression model:</p>
-<p><span class="math display">\[E(Y) = \mathcal{L}(X_1, X_2, \cdots, X_n)\]</span></p>
-</section>
-<section id="contd." class="slide level2">
-<h2>Cont’d.</h2>
-<p>Optimize the objective function using simulated annealing algorithm to minimize the misclassification error.</p>
-<p>The following 6 moves are permitted during the optimization to grow or prune the tree</p>
+<section id="the-accuracy-branch---the-logic-regression-not-logistic" class="slide level2">
+<h2><span class="r-fit-text">The accuracy branch - the logic regression (not logistic!)</span></h2>
+<div>
+<ul>
+<li class="fragment"><p>Ruczinski et al., 2003 for SNP microarray data</p></li>
+<li class="fragment"><p>Construct Boolean expressions <span class="math inline">\(\mathcal{L}(X_1, X_2, \cdots, X_n)\)</span>, e.g.&nbsp;<span class="math inline">\(X_1 \text{ AND } (X_2 \text{ OR } X_3)\)</span> from logical operations:</p>
 <center>
-<img data-src="figures/tree-growth.png">
+<p>AND (<span class="math inline">\(\land\)</span>), OR (<span class="math inline">\(\lor\)</span>) and NOT (<span class="math inline">\(\neg\)</span>)</p>
+</center></li>
+<li class="fragment"><p>The logic regression model:</p></li>
+</ul>
+</div>
+<div class="fragment">
+<p><span class="math display">\[E(Y) = \mathcal{L}(X_1, X_2, \cdots, X_n)\]</span></p>
+</div>
+</section>
+<section id="the-accuracy-branch---the-logic-regression-not-logistic-1" class="slide level2">
+<h2><span class="r-fit-text">The accuracy branch - the logic regression (not logistic!)</span></h2>
+<div class="columns">
+<div class="column fragment" style="width:40%;">
+<ul>
+<li><p>Optimize through simulated annealing to minimize the misclassification error</p></li>
+<li><p>Six possible moves to grow or prune the tree</p></li>
+</ul>
+</div><div class="column fragment" style="width:60%;">
+<p><img data-src="figures/tree-growth.png" width="700" height="500"></p>
+</div></div>
+</section>
+<section id="the-accuracy-branch---the-logic-regression-not-logistic-2" class="slide level2">
+<h2><span class="r-fit-text">The accuracy branch - the logic regression (not logistic!)</span></h2>
+<p>Accuracy measures (precision and recall) as metrics from binary classification errors</p>
+<center>
+<img data-src="figures/accuracy.png" width="800">
 </center>
 </section>
-<section id="contd.-1" class="slide level2">
-<h2>Cont’d.&nbsp;</h2>
-<p>Illustration</p>
-<p>Data structure –&gt; logic regression: <span class="math inline">\(E(\text{unexpected}) \sim L(\text{check1}, \text{check2}, \cdots )\)</span> –&gt; predicted/unexpected table –&gt; precision and recall</p>
-</section>
-<section id="the-redundancy-branch" class="slide level2">
-<h2>The redundancy branch</h2>
+<section id="the-redundancy-branch---independency" class="slide level2">
+<h2>The redundancy branch - independency</h2>
 <p>Total correlation - a generalization of mutual information</p>
 <p><span class="math display">\[\sum_{x_1} \sum_{x_2} \cdots \sum_{x_n} p(x_1, x_2, \cdots, x_n) \log \frac{p(x_1, x_2, \cdots, x_n)}{p(x_1)p(x_2) \cdots p(x_n)}\]</span></p>
 <ul>
-<li>high total correlation –&gt; overlapping information among validation checks (bad)</li>
-<li>low total correlation –&gt; independent information among validation checks (good)</li>
+<li>high total correlation: overlapping information among validation checks (bad)</li>
+<li>low total correlation: independent information among validation checks (good)</li>
 </ul>
-<p>Use total correlation per observation</p>
+<p>Independency = 1 - total correlation per observation</p>
 </section>
 <section id="combine-them-together" class="slide level2">
 <h2>Combine them together</h2>
@@ -379,49 +393,117 @@ H. Sherry Zhang
 <img data-src="figures/metric-calc.png" width="800">
 </center>
 </section>
-<section id="revisit-the-step-count-data" class="slide level2">
-<h2>Revisit the step count data</h2>
+<section id="the-step-count-example" class="slide level2">
+<h2>The step count example</h2>
+<center>
+<strong>Expectation: The average step count of a given subject is between [8500, 9500] </strong>
+</center>
+<center>
+<img data-src="figures/step-count-plot.png" width="800">
+</center>
+</section>
+<section id="the-step-count-example-1" class="slide level2">
+<h2>The step count example</h2>
+<center>
+<strong>Expectation: The average step count of a given subject is between [8500, 9500] </strong>
+</center>
 
 <img data-src="figures/step-count-summary.png" class="r-stretch"></section>
-<section id="revisit-the-step-count-data-1" class="slide level2">
-<h2>Revisit the step count data</h2>
-
-<img data-src="figures/step-count-plot.png" class="r-stretch"></section>
 <section>
-<section id="application-association-of-pm10-on-daily-mortality" class="title-slide slide level1 center">
-<h1>Application: Association of PM10 on daily mortality</h1>
+<section id="application-association-between-pm10-and-daily-mortality" class="title-slide slide level1 center">
+<h1><span class="r-fit-text">Application: Association between PM10 and daily mortality</span></h1>
 
 </section>
-<section id="pm10-concentration-on-daily-mortality" class="slide level2">
-<h2>PM10 concentration on daily mortality</h2>
-<p>some contexts</p>
-<p>possible checks</p>
+<section id="association-between-pm10-and-daily-mortality" class="slide level2 smaller">
+<h2><span class="r-fit-text">Association between PM10 and daily mortality</span></h2>
+<p>Study the association between short-term, day-to-day changes in particulate matter air pollution (PM10) and daily mortality counts using the National Morbidity, Mortality, and Air Pollution Study (NMMAPS) data</p>
+<p><br></p>
+<div class="fragment">
+<p>Build the checks on the NYC data and apply them to the other 39 cities in the NMMAPS dataset</p>
+<p><br></p>
+</div>
+<div class="fragment">
+<p>Model: a simple GLM with Poisson link <span class="math display">\[g(\text{mortality}) = \beta_0 + \beta_1 \text{PM10} + \beta_2 \text{temperature}\]</span></p>
+<p><br></p>
+</div>
+<div class="fragment">
+<p>Expectation: <strong>The PM10 coeﬀicient <span class="math inline">\(\beta_1\)</span> lies between [0, 0.005]</strong>, based on previous work and the range of effect sizes published in the literature.</p>
+</div>
+</section>
+<section id="factors-that-could-affect-the-beta_1-estimation" class="slide level2 smaller">
+<h2><span class="r-fit-text">Factors that could affect the <span class="math inline">\(\beta_1\)</span> estimation</span></h2>
+<ul>
+<li>Mortality-PM10 correlation less than −0.05</li>
+<li>Mortality-PM10 correlation less than −0.03</li>
+<li>Mortality-PM10 correlation greater than 0.03</li>
+<li>Mortality-PM10 correlation greater than 0.05</li>
+</ul>
+<div class="fragment">
+<ul>
+<li>Mortality-temperature correlation greater than −0.3</li>
+<li>Mortality-temperature correlation greater than −0.35</li>
+<li>Mortality-temperature correlation greater than −0.4</li>
+<li>Mortality-temperature correlation greater than −0.45</li>
+</ul>
+</div>
+<div class="fragment">
+<ul>
+<li>Outlier(s) are presented in the variable PM10</li>
+<li>Outlier(s) are presented in the variable mortality</li>
+</ul>
+</div>
+</section>
+<section id="create-replicates-of-the-data" class="slide level2 smaller" data-background-image="figures/sim-data.png" data-background-size="45%" data-background-position="95% 60%">
+<h2><span class="r-fit-text">Create replicates of the data</span></h2>
+<div class="columns">
+<div class="column" style="width:55%;">
+<ul>
+<li class="fragment">Generate the correlation matrix of PM10, mortality, and temperature in a grid</li>
+<li class="fragment">Generate the multivariate normal distribution via Gaussian copula</li>
+<li class="fragment">Transform from the Gaussian CDF to the inverse of CDF to the variable specific distribution based on NYC data
+<ul>
+<li class="fragment">AIC suggests negative binomial for mortality, a beta distribution for PM10 (multiple by 100 to recover the original scale), and Weibull for temperature.</li>
+</ul></li>
+<li class="fragment">Add single outliers to the data for both the mortality and PM10 variable</li>
+</ul>
+</div><div class="column" style="width:30%;">
+
+</div></div>
+</section>
+<section id="the-fitted-logic-regression-model" class="slide level2 smaller">
+<h2>The fitted logic regression model</h2>
+<center>
+<img data-src="figures/mortality-plot.png" width="500" height="450">
+</center>
 </section>
 <section id="results" class="slide level2">
 <h2>Results</h2>
 
-<img data-src="figures/mortality-plot.png" class="r-stretch"><p>checks with cutoff values picked:</p>
-<ul>
-<li>mortality-PM10 correlation less than −0.03</li>
-<li>mortality-temperature correlation greater than −0.3</li>
-<li>PM10 data contains outliers detected by the univariate outlier detection</li>
-<li>mortality data contains outliers detected by the univariate outlier detection</li>
-</ul>
-<p>The fitted logic regression model is</p>
-<blockquote>
-<p>(cor(mortality, PM10) &lt; -0.03) AND (cor(mortality, tmp) &gt; -0.3 OR (mortality outlier AND PM10 outlier))</p>
-</blockquote>
-</section>
-<section id="results-1" class="slide level2">
-<h2>Results</h2>
-
 <img data-src="figures/mortality-summary.png" class="r-stretch"></section>
-<section id="additional-cities" class="slide level2">
-<h2>Additional cities</h2>
-
-<img data-src="figures/additional-cities-summary.png" class="r-stretch"></section>
-<section id="discussion" class="slide level2">
+<section id="apply-the-logic-rule-to-the-all-40-cities" class="slide level2 smaller">
+<h2><span class="r-fit-text">Apply the logic rule to the all 40 cities</span></h2>
+<center>
+<img data-src="figures/additional-cities-summary.png">
+</center>
+<div>
+<ul>
+<li class="fragment"><p>Accuracy rate of 80%: correctly predicts the PM10 coeﬀicient status of 32 cities</p></li>
+<li class="fragment"><p>Recall rate of 88%: correctly identifies 7 (Atlanta, Austin, Memphis, Orlando, Salt Lake City, San Antonio, Tampa) out of the 8 unexpected outcomes</p>
+<ul>
+<li class="fragment">Flagged due to failures in <strong>the mortality-PM10 correlation</strong> and <strong>mortality-temperature correlation</strong> checks</li>
+</ul></li>
+</ul>
+</div>
+</section>
+<section id="discussion" class="slide level2 smaller">
 <h2>Discussion</h2>
+<div>
+<ul>
+<li class="fragment"><p>Visualization methods are also valuable tools for assessing data assumptions and can potentially be formalized as analysis validation checks.</p></li>
+<li class="fragment"><p>Systematically generating realistic simulated data is a key component of our approach and is deserving of further consideration.</p></li>
+<li class="fragment"><p>Communicating the process of data analysis is a key element to providing transparency, improving reproducibility, and building trust with a range of audiences. The analysis validation checks described here provide a general way to encode the assumptions that an data analyst makes about the data and statistical tools applied to the data.</p></li>
+</ul>
+</div>
 </section>
 <section id="section" class="slide level2" data-background-image="figures/qrcode.svg" data-background-size="15%" data-background-position="top right">
 <h2>🔗</h2>

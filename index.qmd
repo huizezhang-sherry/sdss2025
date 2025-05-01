@@ -2,7 +2,7 @@
 title: "Inside Out: Externalizing Assumptions in Data Analysis as Validation Checks"
 author: "H. Sherry Zhang " 
 institute: "University of Texas at Austin" 
-date: "2025 Aug 05"
+date: "2025 May 01"
 format: 
   revealjs:
     scrollable: true
@@ -143,13 +143,13 @@ In every step, analysts need to compare the **expectation and reality**
 
 - Some unexpected results are easy to diagnose
   
-  - Example 1 & 2: whether there are any missing values?
+  - Example 1 & 2: Whether there are any missing values?
   
 . . . 
 
 - Some require more domain knowledge: 
   
-  - Example 3: whether temperature confounding has been added into the model?
+  - Example 3: Whether temperature confounding has been added into the model?
 
 . . . 
 
@@ -197,90 +197,184 @@ Many checks are possible to ensure the average fall into the expected range:
 
 <center>![](figures/metric-calc.png){height="400," width="800"}</center>
 
-## The accuracy branch
+## [The accuracy branch - the logic regression (not logistic!)]{.r-fit-text}
 
-**A quick summary on logic regression (not logistic!)**
+:::{.incremental}
 
-Ruczinski et al., 2003 for SNP microarray data
+* Ruczinski et al., 2003 for SNP microarray data
 
-construct Boolean expressions $\mathcal{L}(X_1, X_2, \cdots, X_n)$ from logical operations: $\mathcal{L(\cdot)}$ includes AND ($\land$), OR ($\lor$) and NOT ($\neg$), e.g. $X_1 \text{ AND } (X_2 \text{ OR } X_3)$
+* Construct Boolean expressions $\mathcal{L}(X_1, X_2, \cdots, X_n)$, e.g. $X_1 \text{ AND } (X_2 \text{ OR } X_3)$ from logical operations: 
 
-The logic regression model:
+  <center> AND ($\land$), OR ($\lor$) and NOT ($\neg$) </center>
+
+* The logic regression model:
+
+:::
+
+. . . 
 
 $$E(Y) = \mathcal{L}(X_1, X_2, \cdots, X_n)$$
 
-## Cont'd.
+## [The accuracy branch - the logic regression (not logistic!)]{.r-fit-text}
 
-Optimize the objective function using simulated annealing algorithm to minimize the misclassification error. 
+::: {.columns}
 
-The following 6 moves are permitted during the optimization to grow or prune the tree 
+::: {.column width="40%" .fragment}
 
-<center>![](figures/tree-growth.png)</center>
+* Optimize through simulated annealing to minimize the misclassification error
 
-## Cont'd. 
-
-Illustration
-
-Data structure  --> logic regression: $E(\text{unexpected}) \sim L(\text{check1}, \text{check2}, \cdots )$  --> predicted/unexpected table --> precision and recall
+* Six possible moves to grow or prune the tree 
 
 
-## The redundancy branch
+:::
+
+::: {.column width="60%" .fragment}
+
+![](figures/tree-growth.png){height="500" width="700"}
+
+:::
+
+::::
+
+
+## [The accuracy branch - the logic regression (not logistic!)]{.r-fit-text}
+
+Accuracy measures (precision and recall) as metrics from binary classification errors
+
+<center>![](figures/accuracy.png){height="400," width="800"}</center>
+
+## The redundancy branch - independency
 
 Total correlation - a generalization of mutual information
 
 $$\sum_{x_1} \sum_{x_2} \cdots \sum_{x_n} p(x_1, x_2, \cdots, x_n) \log \frac{p(x_1, x_2, \cdots, x_n)}{p(x_1)p(x_2) \cdots p(x_n)}$$
 
 
-* high total correlation --> overlapping information among validation checks (bad)
-* low total correlation --> independent information among validation checks (good)
+* high total correlation: overlapping information among validation checks (bad)
+* low total correlation: independent information among validation checks (good)
 
-Use total correlation per observation 
+Independency = 1 - total correlation per observation
 
 ## Combine them together
 
-<center>![](figures/metric-calc.png){height="400," width="800"}</center>
+<center>![](figures/metric-calc.png){width="800"}</center>
+
+## The step count example
+
+<center> **Expectation: The average step count of a given subject is between [8500, 9500] **</center>
+
+<center>![](figures/step-count-plot.png){width="800"}</center>
 
 
-## Revisit the step count data
+## The step count example
+
+<center> **Expectation: The average step count of a given subject is between [8500, 9500] **</center>
 
 ![](figures/step-count-summary.png)
 
-## Revisit the step count data
+# [Application: Association between PM10 and daily mortality]{.r-fit-text} 
 
-![](figures/step-count-plot.png)
+## [Association between PM10 and daily mortality]{.r-fit-text}{.smaller}
 
-# Application: Association of PM10 on daily mortality 
+Study the association between short-term, day-to-day changes in particulate matter air pollution (PM10) and daily mortality counts using the National Morbidity, Mortality, and Air Pollution Study (NMMAPS) data
 
-## PM10 concentration on daily mortality
+<br>
 
-some contexts
+. . .
 
-possible checks
+Build the checks on the NYC data and apply them to the other 39 cities in the NMMAPS dataset
 
-## Results
+<br>
 
-![](figures/mortality-plot.png)
+. . .
 
-checks with cutoff values picked: 
+Model: a simple GLM with Poisson link $$g(\text{mortality}) = \beta_0 + \beta_1 \text{PM10} + \beta_2 \text{temperature}$$
 
-* mortality-PM10 correlation less than −0.03
-* mortality-temperature correlation greater than −0.3
-* PM10 data contains outliers detected by the univariate outlier detection
-* mortality data contains outliers detected by the univariate outlier detection
+<br>
 
-The fitted logic regression model is
+. . .
 
-> (cor(mortality, PM10) < -0.03) AND (cor(mortality, tmp) > -0.3 OR (mortality outlier AND PM10 outlier))
+Expectation: **The PM10 coeﬀicient $\beta_1$ lies between [0, 0.005]**, based on previous work and the range of effect sizes published in the literature.
+
+## [Factors that could affect the $\beta_1$ estimation]{.r-fit-text}{.smaller}
+
+* Mortality-PM10 correlation less than −0.05 
+* Mortality-PM10 correlation less than −0.03 
+* Mortality-PM10 correlation greater than 0.03 
+* Mortality-PM10 correlation greater than 0.05 
+
+. . . 
+
+* Mortality-temperature correlation greater than −0.3 
+* Mortality-temperature correlation greater than −0.35 
+* Mortality-temperature correlation greater than −0.4 
+* Mortality-temperature correlation greater than −0.45 
+
+. . . 
+
+* Outlier(s) are presented in the variable PM10 
+* Outlier(s) are presented in the variable mortality
+
+
+## [Create replicates of the data]{.r-fit-text}{.smaller background-image="figures/sim-data.png" background-size="45%" background-position="95% 60%"}
+
+
+::: {.columns}
+
+::: {.column width="55%" .incremental}
+
+* Generate the correlation matrix of PM10, mortality, and temperature in a grid
+* Generate the multivariate normal distribution via Gaussian copula
+* Transform from the Gaussian CDF to the inverse of CDF to the variable specific distribution based on NYC data  
+    * AIC suggests negative binomial for mortality, a beta distribution for PM10 (multiple by 100 to recover the original scale), and Weibull for temperature. 
+
+* Add single outliers to the data for both the mortality and PM10 variable
+
+:::
+
+::: {.column width="30%"}
+
+
+:::
+
+::::
+
+
+
+## The fitted logic regression model {.smaller}
+
+<center>![](figures/mortality-plot.png){height="450" width="500"}</center>
+
 
 ## Results
 
 ![](figures/mortality-summary.png)
 
-## Additional cities
+## [Apply the logic rule to the all 40 cities]{.r-fit-text} {.smaller}
 
-![](figures/additional-cities-summary.png)
+<center>![](figures/additional-cities-summary.png)</center>
 
-## Discussion
+:::{.incremental}
+
+* Accuracy rate of 80%: correctly predicts the PM10 coeﬀicient status of 32 cities
+
+* Recall rate of 88%: correctly identifies 7 (Atlanta, Austin, Memphis, Orlando, Salt Lake City, San Antonio, Tampa) out of the 8 unexpected outcomes
+    
+  * Flagged due to failures in **the mortality-PM10 correlation** and **mortality-temperature correlation** checks
+
+:::
+
+## Discussion {.smaller}
+
+:::{.incremental}
+
+* Visualization methods are also valuable tools for assessing data assumptions and can potentially be formalized as analysis validation checks.
+
+* Systematically generating realistic simulated data is a key component of our approach and is deserving of further consideration.
+
+* Communicating the process of data analysis is a key element to providing transparency, improving reproducibility, and building trust with a range of audiences. The analysis validation checks described here provide a general way to encode the assumptions that an data analyst makes about the data and statistical tools applied to the data.
+
+:::
 
 ## `r emo::ji("link")` {background-image="figures/qrcode.svg" background-size="15%" background-position="top right"}
 
